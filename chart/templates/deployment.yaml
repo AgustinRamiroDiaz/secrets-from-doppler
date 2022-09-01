@@ -27,10 +27,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: MY_COLOR
-              value: {{ .Values.color }}
-            - name: MY_NAME
-              value: {{ .Values.name }}
+            - name: MONGODB_CONNECTION_STRING
+              value: {{ .Values.mongoString }}
           ports:
             - name: http
               containerPort: 8080

@@ -1,15 +1,25 @@
-name: hello-doppler
-image: okteto/golang:1
-command: bash
-securityContext:
-  capabilities:
-    add:
-    - SYS_PTRACE
-sync:
-- .:/usr/src/app
-forward:
-- 2345:2345
-- 8080:8080
-volumes:
-- /go/pkg/
-- /root/.cache/go-build/
+build:
+  worker:
+    dockerfile: Dockerfile
+
+deploy:
+- (curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh || wget -t 3 -qO- https://cli.doppler.com/install.sh) | sudo sh
+- okteto build -t okteto.dev/hello-doppler:${OKTETO_GIT_COMMIT} .
+- helm upgrade --install hello-doppler chart --set image.tag=${OKTETO_GIT_COMMIT},mongoString=$(doppler secrets get MONGODB_CONNECTION_STRING --plain)
+
+dev:
+  worker:
+    image: ${OKTETO_BUILD_DEV_IMAGE}
+    command: bash
+    securityContext:
+      capabilities:
+        add:
+        - SYS_PTRACE
+    sync:
+      - .:/usr/src/app
+    forward:
+      - 2345:2345
+      - 8080:8080
+    volumes:
+      - /go/pkg/
+      - /root/.cache/go-build/
