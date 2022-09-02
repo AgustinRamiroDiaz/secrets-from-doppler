@@ -4,7 +4,7 @@ build:
 
 deploy:
   - (curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh || wget -t 3 -qO- https://cli.doppler.com/install.sh) | sudo sh
-  - okteto build -t gcr.io/development-300207/hello-doppler:${OKTETO_GIT_COMMIT}
+  - okteto build -t okteto.dev/hello-doppler:${OKTETO_GIT_COMMIT}
   - helm upgrade --install hello-doppler chart --set image.tag=${OKTETO_GIT_COMMIT},mongoString=$(doppler secrets get MONGODB_CONNECTION_STRING --plain)
 
 dev:
