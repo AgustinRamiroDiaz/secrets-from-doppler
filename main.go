@@ -15,12 +15,16 @@ import (
 
 func main() {
 	fmt.Println("Starting hello-doppler server...")
+	http.HandleFunc("/healthz", healthz)
 	http.HandleFunc("/", helloServer)
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		panic(err)
 	}
 }
 
+func healthz(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "I'm alive!")
+}
 func helloServer(w http.ResponseWriter, r *http.Request) {
 	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGODB_CONNECTION_STRING")))
 	if err != nil {
